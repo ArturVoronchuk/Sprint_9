@@ -26,10 +26,24 @@ jobs:
       - name: Start Selenoid via Docker Compose
         run: docker compose up -d selenoid selenoid-ui
 
+      - name: Debug Selenoid
+        if: always()
+        run: |
+          echo "=== docker ps ==="
+          docker ps -a
+          echo "=== selenoid logs ==="
+          docker logs selenoid || true
+          echo "=== status endpoint (/status) ==="
+          curl -v http://localhost:4444/status || true
+          echo "=== status endpoint (/wd/hub/status) ==="
+          curl -v http://localhost:4444/wd/hub/status || true
+          echo "=== network inspect ==="
+          docker network inspect selenoid || true
+
       - name: Wait for Selenoid readiness
         run: |
           for i in {1..30}; do
-            if curl -s http://localhost:4444/status | grep -q '"ready":true'; then
+            if curl -s http://localhost:4444/wd/hub/status | grep -q '"ready":true'; then
               echo "Selenoid is ready"
               exit 0
             fi
