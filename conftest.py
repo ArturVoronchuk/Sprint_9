@@ -27,7 +27,10 @@ def pytest_addoption(parser):
 @pytest.fixture(scope="function")
 def driver(request):
     headless = request.config.getoption("--headless")
-    remote_url = request.config.getoption("--remote-url")
+    remote_url = (
+        request.config.getoption("--remote-url")
+        or os.getenv("SELENIUM_REMOTE_URL")
+    )
     driver = webdriver_factory.WebdriverFactory.get_webdriver(
         headless=headless,
         remote_url=remote_url

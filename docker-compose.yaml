@@ -1,4 +1,3 @@
-version: '5.6'
 services:
   selenoid:
     image: "aerokube/selenoid"
@@ -11,12 +10,16 @@ services:
       - "./selenoid/browsers.json:/etc/selenoid/browsers.json"
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "./selenoid/logs:/opt/selenoid/logs"
-    command: ["-conf", "/etc/selenoid/browsers.json", "-container-network", "selenoid"]
+    command:
+      - "-conf"
+      - "/etc/selenoid/browsers.json"
+      - "-container-network"
+      - "selenoid"
 
   selenoid-ui:
     image: "aerokube/selenoid-ui:latest"
     container_name: selenoid-ui
-    links:
+    depends_on:
       - selenoid
     ports:
       - "8081:8080"
@@ -25,6 +28,7 @@ services:
     command: ["--selenoid-uri", "http://selenoid:4444"]
 
   test:
+    build: .
     image: test
     container_name: test
     volumes:
@@ -33,11 +37,10 @@ services:
       - selenoid
     networks:
       - selenoid
-    command: ["python", "-m", "pytest", "--headless", "--alluredir=allure-results"]
+    environment:
+      - SELENIUM_REMOTE_URL=http://selenoid:4444/wd/hub
 
 networks:
   selenoid:
-name: selenoid
-
-#docker pull selenoid/chrome:128.0
-#docker compose up --build
+    external: true
+    name: selenoid
