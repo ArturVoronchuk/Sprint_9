@@ -1,0 +1,46 @@
+services:
+  selenoid:
+    image: "aerokube/selenoid"
+    container_name: selenoid
+    ports:
+      - "4444:4444"
+    networks:
+      - selenoid
+    volumes:
+      - "./selenoid:/etc/selenoid"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "./selenoid/logs:/opt/selenoid/logs"
+    command:
+      - "-conf"
+      - "/etc/selenoid/browsers.json"
+      - "-container-network"
+      - "selenoid"
+
+  selenoid-ui:
+    image: "aerokube/selenoid-ui:latest"
+    container_name: selenoid-ui
+    depends_on:
+      - selenoid
+    ports:
+      - "8081:8080"
+    networks:
+      - selenoid
+    command: ["--selenoid-uri", "http://selenoid:4444"]
+
+  test:
+    build: .
+    image: test
+    container_name: test
+    volumes:
+      - ".:/app"
+    depends_on:
+      - selenoid
+    networks:
+      - selenoid
+    environment:
+      - SELENIUM_REMOTE_URL=http://selenoid:4444/wd/hub
+
+networks:
+  selenoid:
+    external: true
+    name: selenoid
