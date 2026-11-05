@@ -18,13 +18,11 @@ class BasePage:
 
     def click_to_element(self, locator):
         self._wait().until(ec.element_to_be_clickable(locator)).click()
-        return self
 
     def send_keys(self, locator, text):
         element = self._wait().until(ec.visibility_of_element_located(locator))
         element.clear()
         element.send_keys(text)
-        return self
 
     def get_current_url(self):
         return self.driver.current_url
@@ -46,9 +44,7 @@ class BasePage:
         self._wait(timeout).until(
             ec.visibility_of_element_located(locator)
         )
-        return self
 
     def send_keys_to_hidden_input(self, locator, text):
         element = self._wait().until(ec.presence_of_element_located(locator))
         element.send_keys(text)
-        return self

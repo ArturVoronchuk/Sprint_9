@@ -5,25 +5,21 @@ class LoginPage(BasePage):
 
     def wait_login_form_visible(self, timeout=15):
         self.wait_element_visible(login_page_locators.LOGIN_BUTTON, timeout)
-        return self
 
     def is_login_form_visible(self):
         return self.is_element_present(login_page_locators.LOGIN_BUTTON)
 
-    def enter_email(self, first_name):
+    def enter_email(self, username):
         self.send_keys(
             login_page_locators.LOGIN_EMAIL_FIELD,
-            first_name
+            username
         )
-        return self
 
-    def enter_password(self, last_name):
+    def enter_password(self, password):
         self.send_keys(
             login_page_locators.LOGIN_PASSWORD_FIELD,
-            last_name
+            password
         )
-        return self
 
     def click_login_button(self):
         self.click_to_element(login_page_locators.LOGIN_BUTTON)
-        return self
